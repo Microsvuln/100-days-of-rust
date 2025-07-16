@@ -41,6 +41,13 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()>  {
         let response = format!("{status_line}\r\nContent-length: {length}\r\n\r\n{contents}");
         stream.write_all(response.as_bytes())?;
     } 
+    else if path.starts_with("/echo/") {
+        let echoed_str = &path["/echo/".len()..];
+        let status_line = "HTTP/1.1 200 OK";
+        let length = echoed_str.len();
+        let response = format!("{status_line}\r\nContent-Type: text/plain\r\nContent-Length: {length}\r\n\r\n{echoed_str}");
+        stream.write_all(response.as_bytes())?;
+    }
     else {
         let status_line = "HTTP/1.1 404 Not Found\r\n\r\n";
         // let contents    = fs::read_to_string("404.html").unwrap();
